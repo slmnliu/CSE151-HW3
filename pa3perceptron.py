@@ -86,7 +86,7 @@ def classify(classifier, vector, pos_label, neg_label):
     elif (np.dot(classifier, vector)) < 0:
         return neg_label
     else:
-        random.choice([pos_label, neg_label])
+        return random.choice([pos_label, neg_label])
 
 def voted_classify(classifier_list, vector, pos_label, neg_label):
     sum = 0
@@ -99,7 +99,7 @@ def voted_classify(classifier_list, vector, pos_label, neg_label):
     elif (sum) < 0:
         return neg_label
     else:
-        random.choice([pos_label, neg_label])
+        return random.choice([pos_label, neg_label])
 
 def one_v_all_classify(classifier_list, vector):
     predict_count = 0
@@ -190,7 +190,7 @@ q1_test_data = prune_data(test_data, [1,2])
 # sorted_words = sorted(word_list, key=lambda x: x[0])
 # print(sorted_words)
 
-# Question 3 ----------------
+# # Question 3 ----------------
 C1 = perceptron(training_data, 1, -1, 1)
 C2 = perceptron(training_data, 2, -1, 1)
 C3 = perceptron(training_data, 3, -1, 1)
