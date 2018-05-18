@@ -101,8 +101,18 @@ def voted_classify(classifier_list, vector, pos_label, neg_label):
     else:
         random.choice([pos_label, neg_label])
 
-def one_v_all_classify(classifier_list, vector, pos_label):
-    pass
+def one_v_all_classify(classifier_list, vector):
+    predict_count = 0
+    correct_i = 0
+    for i in range (1,7):
+        prediction = classify(classifier_list[i-1], vector, i, -1)
+        if prediction == i:
+            predict_count += 1
+            correct_i = i
+    if predict_count == 1:
+        return correct_i
+    else:
+        return -1
 
 def calc_error(data_list, classifier, pos_label, neg_label):
     error_count = 0
@@ -117,6 +127,34 @@ def voted_calc_error(data_list, classifier_list, pos_label, neg_label):
         if voted_classify(classifier_list, vector[:-1], pos_label, neg_label) != vector[-1]:
             error_count += 1
     return (error_count / len(data_list))
+
+def confusion_matrix(data_list, classifier_list):
+    label_counts = [0,0,0,0,0,0]
+    
+    # Get all the counts for each label
+    for vector in data_list:
+        label_counts[vector[-1] - 1] += 1
+    
+    column_vals = []
+    for j in range(1, 7):
+        # Represents the different classifiers and don't know
+        column = [0,0,0,0,0,0,0]
+        for vector in data_list:
+            # Vector has label j
+            if vector[-1] == j:
+                i = one_v_all_classify(classifier_list, vector[:-1])
+                # Don't Know Case
+                if i == -1:
+                    column[6] += 1
+                else:
+                    column[i-1] += 1
+        # Iterate through column vals and divide by Nj
+        for cij in range(len(column)):
+            column[cij] = column[cij] / label_counts[j - 1]
+        column_vals.append(column)
+    return column_vals
+
+
 
 training_data = load_data("pa3train.txt")
 test_data = load_data("pa3test.txt")
@@ -161,3 +199,8 @@ C5 = perceptron(training_data, 5, -1, 1)
 C6 = perceptron(training_data, 6, -1, 1)
 
 classifier_list = [C1, C2, C3, C4, C5, C6]
+
+cmatrix = confusion_matrix(test_data, classifier_list)
+
+for column in cmatrix:
+    print(column)
